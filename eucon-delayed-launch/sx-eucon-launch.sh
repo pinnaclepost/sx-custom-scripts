@@ -5,7 +5,9 @@
 # NIC or the S6 MTM isn't up yet it fails to reach the BootManager once and
 # never retries, and DADman then can't connect either. This waits for the
 # EuCon address, then for the MTRX to answer, settles, and launches the apps
-# in order. Written in bash (not Python) because the studio Macs have no
+# in order. If the network isn't ready within the timeout it launches nothing:
+# something else is wrong, and apps popping up minutes after login would
+# surprise whoever is using the room. Written in bash (not Python) because the studio Macs have no
 # Command Line Tools, and /usr/bin/python3 is only an installer stub there.
 #
 # Settings come from the LaunchAgent's EnvironmentVariables; defaults below.
@@ -15,7 +17,7 @@ MTRX_HOST="${MTRX_HOST:-192.168.50.43}"       # MTRX control (DADman) host
 MTRX_PORT="${MTRX_PORT:-10003}"               # MTRX control port
 SETTLE_SECS="${SETTLE_SECS:-30}"              # extra wait for the MTM to boot
 APP_GAP_SECS="${APP_GAP_SECS:-15}"            # gap between launching apps
-TIMEOUT_SECS="${TIMEOUT_SECS:-180}"           # give up waiting and launch anyway
+TIMEOUT_SECS="${TIMEOUT_SECS:-180}"           # give up and launch nothing
 APPS="${APPS:-WSControlApp DADman}"           # launched in this order
 
 log() { echo "$(date '+%Y-%m-%d %H:%M:%S') $*"; }
@@ -33,7 +35,7 @@ wait_for() {
     local desc="$1" check="$2"
     while ! "$check"; do
         if (( SECONDS >= TIMEOUT_SECS )); then
-            log "Timed out after ${SECONDS}s waiting for ${desc}; launching anyway"
+            log "Timed out after ${SECONDS}s waiting for ${desc}; not launching anything"
             return 1
         fi
         sleep 2
@@ -43,10 +45,10 @@ wait_for() {
 
 log "Starting (subnet ${EUCON_SUBNET}x, MTRX ${MTRX_HOST}:${MTRX_PORT})"
 
-if wait_for "EuCon address" has_eucon_address && wait_for "MTRX" mtrx_answers; then
-    log "Settling ${SETTLE_SECS}s for the MTM"
-    sleep "$SETTLE_SECS"
-fi
+wait_for "EuCon address" has_eucon_address || exit 1
+wait_for "MTRX" mtrx_answers || exit 1
+log "Settling ${SETTLE_SECS}s for the MTM"
+sleep "$SETTLE_SECS"
 
 first=1
 for app in $APPS; do

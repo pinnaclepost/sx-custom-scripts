@@ -15,7 +15,7 @@ The launcher:
 3. waits a further 30 s so the MTM is ready if the console was restarted at the same time
 4. launches WSControl, waits 15 s, then launches DADman, skipping either app if it's already running
 
-After 3 minutes it stops waiting and launches the apps anyway, so they never silently stay closed.
+If the EuCon address or the MTRX isn't there within 3 minutes, it gives up and **launches nothing**. That means something else is wrong, and apps starting minutes after login would surprise whoever is using the room. The log says which step it timed out on. Launch the apps by hand once the network problem is sorted.
 
 ### Files
 
@@ -36,7 +36,7 @@ Set these in the plist's `EnvironmentVariables` (defaults in brackets):
 | `APPS` | Apps to launch, in order (`WSControlApp DADman`) |
 | `SETTLE_SECS` | Extra wait after the MTRX answers (`30`) |
 | `APP_GAP_SECS` | Wait between apps (`15`) |
-| `TIMEOUT_SECS` | Give up waiting and launch anyway (`180`) |
+| `TIMEOUT_SECS` | Give up waiting and launch nothing (`180`) |
 
 ### Install
 

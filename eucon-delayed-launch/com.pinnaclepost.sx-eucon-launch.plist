@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.pinnaclepost.sx-eucon-launch</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/bin/bash</string>
+		<string>__SCRIPT_PATH__</string>
+	</array>
+	<key>EnvironmentVariables</key>
+	<dict>
+		<key>EUCON_SUBNET</key>
+		<string>192.168.50.</string>
+		<key>MTRX_HOST</key>
+		<string>192.168.50.43</string>
+		<key>MTRX_PORT</key>
+		<string>10003</string>
+		<key>APPS</key>
+		<string>WSControlApp DADman</string>
+	</dict>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardOutPath</key>
+	<string>__LOG_PATH__</string>
+	<key>StandardErrorPath</key>
+	<string>__LOG_PATH__</string>
+</dict>
+</plist>
